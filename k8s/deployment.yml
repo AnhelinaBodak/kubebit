@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-manager
+  namespace: management-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-manager
+  template:
+    metadata:
+      labels:
+        app: k8s-manager
+    spec:
+      serviceAccountName: k8s-manager
+      containers:
+        - name: k8s-manager
+          image: k8s-manager:v0.0.5
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5000
