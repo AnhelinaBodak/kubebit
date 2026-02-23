@@ -11,7 +11,7 @@ metadata:
   name: k8s-manager
 rules:
   - apiGroups: [""]
-    resources: ["namespaces", "pods"]
+    resources: ["namespaces", "pods", "services"]
     verbs: ["get", "list", "create", "delete"]
 
 ---
