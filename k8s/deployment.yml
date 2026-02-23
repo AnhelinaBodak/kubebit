@@ -16,7 +16,7 @@ spec:
       serviceAccountName: k8s-manager
       containers:
         - name: k8s-manager
-          image: k8s-manager:v0.0.5
+          image: k8s-manager:v0.0.7
           imagePullPolicy: Never
           ports:
             - containerPort: 5000
