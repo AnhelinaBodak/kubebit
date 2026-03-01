@@ -1,2 +1,5 @@
 flask
 kubernetes
+sqlalchemy
+flask-sqlalchemy
+psycopg2

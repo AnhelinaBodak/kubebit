@@ -14,9 +14,21 @@ spec:
         app: k8s-manager
     spec:
       serviceAccountName: k8s-manager
+      initContainers:
+      - name: wait-for-db
+        image: busybox:1.36
+        command: ["sh", "-c", "until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done"]
       containers:
         - name: k8s-manager
-          image: k8s-manager:v0.0.7
+          image: k8s-manager:v0.0.9
           imagePullPolicy: Never
           ports:
             - containerPort: 5000
+          env:
+          - name: DB_HOST
+            value: postgres
+          - name: DB_PORT
+            value: "5432"
+          envFrom:
+          - secretRef:
+              name: postgres-secret

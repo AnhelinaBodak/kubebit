@@ -1,5 +1,6 @@
 from kubernetes import client, config
 from kubernetes.client.exceptions import ApiException
+from core.runtime import get_container_data
 
 v1 = None
 
@@ -67,6 +68,10 @@ def deploy_challenge(user_id: int, challenge_id:int, namespace: str):
         if e.status != 404:
             raise
 
+    container_data = get_container_data(challenge_id)
+    image = container_data.docker_image
+    container_port = container_data.container_port
+
     pod = client.V1Pod(
         metadata=client.V1ObjectMeta(
             name = pod_name,
@@ -75,12 +80,21 @@ def deploy_challenge(user_id: int, challenge_id:int, namespace: str):
                 "challenge-id": str(challenge_id)
             }
         ),
+        # spec = client.V1PodSpec(
+        #     containers = [
+        #         client.V1Container(
+        #             name = f"challenge-{challenge_id}",
+        #             image = "angelu/challenge_1:v1",
+        #             ports = [client.V1ContainerPort(container_port=5000)]
+        #         )
+        #     ]
+        # )
         spec = client.V1PodSpec(
             containers = [
                 client.V1Container(
                     name = f"challenge-{challenge_id}",
-                    image = "angelu/challenge_1:v1",
-                    ports = [client.V1ContainerPort(container_port=5000)]
+                    image = image,
+                    ports = [client.V1ContainerPort(container_port=container_port)]
                 )
             ]
         )
@@ -91,7 +105,7 @@ def deploy_challenge(user_id: int, challenge_id:int, namespace: str):
     except ApiException as e:
         return {"error": e.reason, "details": e.body}, e.status
 
-    svc_name = create_service(user_id, challenge_id, namespace, port=80, target_port=5000)
+    svc_name = create_service(user_id, challenge_id, namespace, port=80, target_port=container_port)
 
     return {"status": "started", "pod_name": pod_name, "svc_name": svc_name}
 
