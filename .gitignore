@@ -1,3 +1,2 @@
 .venv/
 .vscode/
-k8s/secret.yml
