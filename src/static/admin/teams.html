@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kubebit Admin - Teams</title>
+  <link rel="stylesheet" href="/static/admin/styles.css" />
+</head>
+<body>
+  <div class="setup-overlay" id="setupOverlay">
+    <div class="setup-window">
+      <div class="setup-brand">
+        <svg viewBox="0 0 28 28" aria-hidden="true">
+          <polygon points="14,2 25,8 25,20 14,26 3,20 3,8" fill="none" stroke="#3b5bdb" stroke-width="1.5"/>
+          <polygon points="14,7 21,11 21,17 14,21 7,17 7,11" fill="#3b5bdb"/>
+        </svg>
+        <div class="brand-name">kube<span>bit</span></div>
+      </div>
+      <h2 class="setup-title">Initialize admin access</h2>
+      <p class="setup-copy">Create a new password for the seeded admin account before entering the console.</p>
+      <form class="form" data-action="initialize-admin">
+        <div>
+          <label>New admin password</label>
+          <input name="password" type="password" placeholder="Create a new password" required />
+        </div>
+        <div>
+          <label>Confirm password</label>
+          <input name="password_confirm" type="password" placeholder="Repeat password" required />
+        </div>
+        <div class="actions"><button class="primary" type="submit">Set password</button></div>
+        <div class="status" data-status></div>
+      </form>
+    </div>
+  </div>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <svg viewBox="0 0 28 28" aria-hidden="true">
+          <polygon points="14,2 25,8 25,20 14,26 3,20 3,8" fill="none" stroke="#3b5bdb" stroke-width="1.5"/>
+          <polygon points="14,7 21,11 21,17 14,21 7,17 7,11" fill="#3b5bdb"/>
+        </svg>
+        <div class="brand-name">kube<span>bit</span></div>
+      </div>
+      <nav class="nav" aria-label="Admin sections">
+        <button class="" onclick="window.location.href='/admin/users'">Users</button>
+        <button class="active" onclick="window.location.href='/admin/teams'">Teams</button>
+        <button class="" onclick="window.location.href='/admin/challenges'">Challenges</button>
+      </nav>
+      <div class="side-note">Admin console for local CTF operations. Actions use the current Flask API.</div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar">
+        <div>
+          <h1>Admin console</h1>
+          <p class="subtitle">Create teams, assign captains, and inspect membership.</p>
+        </div>
+        <div class="top-actions">
+          <div class="user-chip" id="userChip">Signed in</div>
+          <button class="secondary" id="signOutButton" type="button">Sign out</button>
+          <div class="badge">API ONLINE</div>
+        </div>
+      </div>
+
+      <section class="page active" id="teams">
+        <div class="grid">
+          <div class="stack">
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-kicker">Teams</div>
+                  <div class="panel-title">Create team</div>
+                </div>
+              </div>
+              <form class="form" data-action="create-team">
+                <div>
+                  <label>Team name</label>
+                  <input name="name" placeholder="nullbyte" required />
+                </div>
+                <div>
+                  <label>Captain</label>
+                  <select name="captain_user_id" data-user-select>
+                    <option value="">No captain yet</option>
+                  </select>
+                </div>
+                <div class="actions"><button class="primary" type="submit">Create team</button></div>
+                <div class="status" data-status></div>
+              </form>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-kicker">Captain</div>
+                  <div class="panel-title">Assign captain</div>
+                </div>
+              </div>
+              <form class="form" data-action="assign-captain">
+                <div class="two">
+                  <div>
+                    <label>Team</label>
+                    <select name="team_id" data-team-select required>
+                      <option value="">Choose team</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label>Captain</label>
+                    <select name="captain_user_id" data-user-select required>
+                      <option value="">Choose captain</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="actions"><button class="primary" type="submit">Assign captain</button></div>
+                <div class="status" data-status></div>
+              </form>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-kicker">Teams</div>
+                  <div class="panel-title">All teams</div>
+                </div>
+                <button class="secondary" data-refresh="teams">Refresh</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>ID</th><th>Name</th><th>Captain</th><th>Members</th><th>Points</th></tr></thead>
+                  <tbody id="teamsTable"><tr><td colspan="5" class="empty">Loading teams...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-kicker">Members</div>
+                  <div class="panel-title">View users in team</div>
+                </div>
+              </div>
+              <form class="form" data-action="load-team-users">
+                <div class="two">
+                  <div>
+                    <label>Team</label>
+                    <select name="team_id" data-team-select required>
+                      <option value="">Choose team</option>
+                    </select>
+                  </div>
+                  <div class="actions" style="align-items:end"><button class="primary" type="submit">Load members</button></div>
+                </div>
+                <div class="status" data-status></div>
+              </form>
+              <div class="table-wrap" style="margin-top:12px">
+                <table>
+                  <thead><tr><th>ID</th><th>Username</th><th>Name</th><th>Email</th><th>Captain</th><th>Points</th></tr></thead>
+                  <tbody id="teamUsersTable"><tr><td colspan="6" class="empty">Choose a team.</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="/static/admin/app.js"></script>
+</body>
+</html>

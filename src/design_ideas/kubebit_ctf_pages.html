@@ -1,0 +1,345 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{font-family:'DM Sans',sans-serif;color:#1a202c}
+.nav{display:flex;gap:2px;margin-bottom:0;border-bottom:1px solid #e8ecf4;padding:0 0 0 0;background:#fff;border-radius:14px 14px 0 0;overflow:hidden}
+.nav-btn{padding:12px 22px;font-size:12.5px;font-family:'DM Sans',sans-serif;border:none;background:transparent;cursor:pointer;color:#94a3b8;font-weight:400;border-bottom:2px solid transparent;transition:all .18s;letter-spacing:0.01em}
+.nav-btn.on{color:#3b5bdb;border-bottom-color:#3b5bdb;background:#f8f9ff;font-weight:500}
+.page{display:none}.page.on{display:block}
+
+/* LOGIN */
+.login-wrap{background:#f7f8fc;min-height:440px;display:flex;align-items:center;justify-content:center;padding:40px 20px;border-radius:0 0 14px 14px}
+.login-card{background:#fff;border:1px solid #e8ecf4;border-radius:14px;padding:36px 40px;width:100%;max-width:380px}
+.brand{display:flex;align-items:center;gap:8px;margin-bottom:28px;justify-content:center}
+.brand-hex{width:28px;height:28px}
+.brand-name{font-size:20px;font-weight:600;letter-spacing:-0.03em;color:#1a202c}
+.brand-name span{color:#3b5bdb}
+.login-title{font-size:18px;font-weight:600;color:#1a202c;margin-bottom:4px;letter-spacing:-0.02em}
+.login-sub{font-size:13px;color:#94a3b8;margin-bottom:24px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:500;color:#64748b;margin-bottom:6px;letter-spacing:0.02em}
+.field input{width:100%;height:38px;border:1px solid #e2e8f0;border-radius:8px;padding:0 12px;font-size:14px;font-family:'DM Sans',sans-serif;color:#1a202c;outline:none;background:#fafbfd;transition:border .15s}
+.field input:focus{border-color:#3b5bdb;background:#fff}
+.field input::placeholder{color:#cbd5e1}
+.btn-primary{width:100%;height:40px;background:#3b5bdb;border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:4px;transition:background .15s}
+.btn-primary:hover{background:#3451c7}
+.divider{text-align:center;font-size:12px;color:#cbd5e1;margin:16px 0;position:relative}
+.divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:#f1f5f9}
+.divider span{background:#fff;padding:0 10px;position:relative}
+.oauth-btn{width:100%;height:38px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;font-size:13px;font-family:'DM Sans',sans-serif;color:#475569;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:border .15s}
+.oauth-btn:hover{border-color:#cbd5e1}
+.login-footer{text-align:center;margin-top:20px;font-size:12px;color:#94a3b8}
+.login-footer a{color:#3b5bdb;text-decoration:none}
+
+/* CREATE */
+.create-wrap{background:#f7f8fc;min-height:440px;padding:28px;border-radius:0 0 14px 14px}
+.create-header{margin-bottom:22px}
+.create-header h2{font-size:20px;font-weight:600;color:#1a202c;letter-spacing:-0.02em}
+.create-header p{font-size:13px;color:#94a3b8;margin-top:3px}
+.form-card{background:#fff;border:1px solid #e8ecf4;border-radius:12px;padding:24px;margin-bottom:16px}
+.form-card-title{font-size:11px;font-weight:600;color:#94a3b8;letter-spacing:0.1em;margin-bottom:16px;text-transform:uppercase}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.cfield{margin-bottom:0}
+.cfield label{display:block;font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px}
+.cfield input,.cfield select,.cfield textarea{width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:8px 11px;font-size:13px;font-family:'DM Sans',sans-serif;color:#1a202c;outline:none;background:#fafbfd;transition:border .15s}
+.cfield input:focus,.cfield select:focus,.cfield textarea:focus{border-color:#3b5bdb;background:#fff}
+.cfield textarea{resize:vertical;min-height:72px;line-height:1.5}
+.cfield select{height:36px;cursor:pointer}
+.cfield input::placeholder,.cfield textarea::placeholder{color:#cbd5e1}
+.hint{font-size:11px;color:#b0bec5;margin-top:4px}
+.mono-input{font-family:'IBM Plex Mono',monospace;font-size:12px}
+.flag-wrap{position:relative}
+.flag-wrap input{padding-right:70px}
+.flag-badge{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:#eef2ff;color:#3b5bdb;font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:0.05em;pointer-events:none}
+.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:4px}
+.btn-ghost{height:38px;padding:0 18px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;font-size:13px;font-family:'DM Sans',sans-serif;color:#64748b;cursor:pointer}
+.btn-create{height:38px;padding:0 22px;border:none;border-radius:8px;background:#3b5bdb;color:#fff;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer}
+
+/* CHALLENGES */
+.chal-wrap{background:#f7f8fc;min-height:440px;padding:24px;border-radius:0 0 14px 14px}
+.chal-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.chal-topbar h2{font-size:19px;font-weight:600;color:#1a202c;letter-spacing:-0.02em}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filter-pill{padding:5px 13px;border-radius:20px;border:1px solid #e2e8f0;background:#fff;font-size:12px;color:#64748b;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.filter-pill.on{background:#3b5bdb;border-color:#3b5bdb;color:#fff}
+.search-row{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.search-box{flex:1;height:36px;border:1px solid #e2e8f0;border-radius:8px;padding:0 12px;font-size:13px;font-family:'DM Sans',sans-serif;color:#1a202c;outline:none;background:#fff}
+.search-box:focus{border-color:#3b5bdb}
+.progress-bar-wrap{background:#fff;border:1px solid #e8ecf4;border-radius:10px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;gap:16px}
+.prog-label{font-size:12px;color:#94a3b8;white-space:nowrap}
+.prog-track{flex:1;height:5px;background:#f1f5f9;border-radius:3px}
+.prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#3b5bdb,#748ffc)}
+.prog-count{font-size:12px;font-weight:500;color:#3b5bdb;white-space:nowrap}
+.chal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px}
+.chal-card{background:#fff;border:1px solid #e8ecf4;border-radius:12px;padding:16px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.chal-card:hover{border-color:#b8c6fb;box-shadow:0 2px 12px rgba(59,91,219,0.07);transform:translateY(-1px)}
+.chal-card.solved{border-color:#d1fae5;background:#f0fdf4}
+.chal-card.solved::after{content:'✓';position:absolute;top:10px;right:12px;font-size:11px;color:#10b981;font-weight:600}
+.cat-badge{display:inline-block;font-size:10px;font-weight:600;letter-spacing:0.06em;padding:3px 8px;border-radius:4px;margin-bottom:10px}
+.cat-web{background:#ede9fe;color:#5b21b6}
+.cat-crypto{background:#fef3c7;color:#92400e}
+.cat-pwn{background:#fee2e2;color:#991b1b}
+.cat-rev{background:#dbeafe;color:#1e40af}
+.cat-misc{background:#e0f2fe;color:#075985}
+.cat-docker{background:#eef2ff;color:#3730a3}
+.chal-name{font-size:14px;font-weight:600;color:#1a202c;letter-spacing:-0.01em;margin-bottom:6px}
+.chal-desc{font-size:11.5px;color:#94a3b8;line-height:1.45;margin-bottom:10px}
+.chal-footer{display:flex;align-items:center;justify-content:space-between}
+.chal-pts{font-size:13px;font-weight:600;color:#3b5bdb}
+.chal-solves{font-size:11px;color:#b0bec5}
+.difficulty{display:flex;gap:2px;margin-bottom:10px}
+.dot{width:6px;height:6px;border-radius:50%}
+.dot.on{background:#3b5bdb}
+.dot.off{background:#e2e8f0}
+</style>
+
+<h2 class="sr-only">kubebit CTF — макети трьох сторінок: логін, створення завдання, перегляд завдань</h2>
+
+<div class="wrap">
+<div class="nav">
+  <button class="nav-btn on" onclick="show('login',this)">Login</button>
+  <button class="nav-btn" onclick="show('create',this)">Create challenge</button>
+  <button class="nav-btn" onclick="show('challenges',this)">Challenges</button>
+</div>
+
+<!-- LOGIN -->
+<div class="page on" id="login">
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="brand">
+      <svg class="brand-hex" viewBox="0 0 28 28"><polygon points="14,2 25,8 25,20 14,26 3,20 3,8" fill="none" stroke="#3b5bdb" stroke-width="1.5"/><polygon points="14,7 21,11 21,17 14,21 7,17 7,11" fill="#3b5bdb"/></svg>
+      <div class="brand-name">kube<span>bit</span></div>
+    </div>
+    <div class="login-title">Welcome back</div>
+    <div class="login-sub">Sign in to access the CTF platform</div>
+    <div class="field">
+      <label>Username or email</label>
+      <input type="text" placeholder="player@kubebit.io">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" placeholder="••••••••••">
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#64748b;cursor:pointer">
+        <input type="checkbox" style="width:14px;height:14px;accent-color:#3b5bdb"> Remember me
+      </label>
+      <a href="#" style="font-size:12px;color:#3b5bdb;text-decoration:none">Forgot password?</a>
+    </div>
+    <button class="btn-primary">Sign in</button>
+    <div class="divider"><span>or continue with</span></div>
+    <button class="oauth-btn">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#94a3b8" stroke-width="1"/><path d="M8 1 C8 1 11 4 11 8 S8 15 8 15" stroke="#94a3b8" stroke-width="1"/><path d="M1 8h14" stroke="#94a3b8" stroke-width="1"/><path d="M2.5 5h11M2.5 11h11" stroke="#94a3b8" stroke-width="0.8"/></svg>
+      Continue with SSO
+    </button>
+    <div class="login-footer">Don't have an account? <a href="#">Register</a></div>
+  </div>
+</div>
+</div>
+
+<!-- CREATE -->
+<div class="page" id="create">
+<div class="create-wrap">
+  <div class="create-header">
+    <h2>New challenge</h2>
+    <p>Deploy a containerized CTF challenge to the cluster</p>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-title">Basic info</div>
+    <div class="grid2" style="margin-bottom:14px">
+      <div class="cfield">
+        <label>Challenge name</label>
+        <input type="text" placeholder="e.g. Hidden in Plain Sight">
+      </div>
+      <div class="cfield">
+        <label>Category</label>
+        <select>
+          <option>Web</option>
+          <option>Pwn</option>
+          <option>Reverse</option>
+          <option>Crypto</option>
+          <option>Misc</option>
+        </select>
+      </div>
+    </div>
+    <div class="cfield">
+      <label>Description</label>
+      <textarea placeholder="What is this challenge about? Give players some context…"></textarea>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-title">Scoring</div>
+    <div class="grid3">
+      <div class="cfield">
+        <label>Base points</label>
+        <input type="number" placeholder="500">
+        <div class="hint">Starting score</div>
+      </div>
+      <div class="cfield">
+        <label>Min points</label>
+        <input type="number" placeholder="100">
+        <div class="hint">Floor after decay</div>
+      </div>
+      <div class="cfield">
+        <label>Max attempts</label>
+        <input type="number" placeholder="Unlimited">
+        <div class="hint">Leave blank = ∞</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-title">Flag</div>
+    <div class="cfield">
+      <label>Flag value</label>
+      <div class="flag-wrap">
+        <input type="text" placeholder="kubebit{your_flag_here}" class="mono-input">
+        <div class="flag-badge">FLAG</div>
+      </div>
+      <div class="hint">Must match exactly — case sensitive</div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-title">Container config</div>
+    <div class="grid2" style="margin-bottom:14px">
+      <div class="cfield">
+        <label>Docker image</label>
+        <input type="text" placeholder="registry.kubebit.io/chals/my-chal:latest" class="mono-input">
+      </div>
+      <div class="cfield">
+        <label>Container port</label>
+        <input type="number" placeholder="8080">
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="cfield">
+        <label>CPU limit</label>
+        <input type="text" placeholder="500m" class="mono-input">
+        <div class="hint">e.g. 250m, 1, 2</div>
+      </div>
+      <div class="cfield">
+        <label>Memory limit</label>
+        <input type="text" placeholder="256Mi" class="mono-input">
+        <div class="hint">e.g. 128Mi, 512Mi, 1Gi</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn-ghost">Cancel</button>
+    <button class="btn-create">Deploy challenge →</button>
+  </div>
+</div>
+</div>
+
+<!-- CHALLENGES -->
+<div class="page" id="challenges">
+<div class="chal-wrap">
+  <div class="chal-topbar">
+    <h2>Challenges</h2>
+    <div class="filters">
+      <button class="filter-pill on">All</button>
+      <button class="filter-pill">Web</button>
+      <button class="filter-pill">Pwn</button>
+      <button class="filter-pill">Crypto</button>
+      <button class="filter-pill">Reverse</button>
+      <button class="filter-pill">Misc</button>
+    </div>
+  </div>
+  <div class="search-row">
+    <input class="search-box" type="text" placeholder="Search challenges…">
+  </div>
+  <div class="progress-bar-wrap">
+    <span class="prog-label">Your progress</span>
+    <div class="prog-track"><div class="prog-fill" style="width:33%"></div></div>
+    <span class="prog-count">4 / 12 solved</span>
+  </div>
+  <div class="chal-grid">
+
+    <div class="chal-card solved">
+      <div class="cat-badge cat-web">WEB</div>
+      <div class="difficulty"><div class="dot on"></div><div class="dot off"></div><div class="dot off"></div></div>
+      <div class="chal-name">Cookie Monster</div>
+      <div class="chal-desc">Session hijacking awaits. Find what the monster is hiding.</div>
+      <div class="chal-footer"><span class="chal-pts">487 pts</span><span class="chal-solves">31 solves</span></div>
+    </div>
+
+    <div class="chal-card">
+      <div class="cat-badge cat-web">WEB</div>
+      <div class="difficulty"><div class="dot on"></div><div class="dot on"></div><div class="dot off"></div></div>
+      <div class="chal-name">JWT Juggler</div>
+      <div class="chal-desc">Tokens can lie. Can you make one tell the truth you want?</div>
+      <div class="chal-footer"><span class="chal-pts">350 pts</span><span class="chal-solves">44 solves</span></div>
+    </div>
+
+    <div class="chal-card solved">
+      <div class="cat-badge cat-crypto">CRYPTO</div>
+      <div class="difficulty"><div class="dot on"></div><div class="dot off"></div><div class="dot off"></div></div>
+      <div class="chal-name">XOR Xmas</div>
+      <div class="chal-desc">A festive cipher with a single-byte secret. Unwrap it.</div>
+      <div class="chal-footer"><span class="chal-pts">100 pts</span><span class="chal-solves">89 solves</span></div>
+    </div>
+
+    <div class="chal-card">
+      <div class="cat-badge cat-pwn">PWN</div>
+      <div class="difficulty"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div></div>
+      <div class="chal-name">Stack Smash Bros</div>
+      <div class="chal-desc">Classic buffer overflow. No canary, no ASLR — no mercy.</div>
+      <div class="chal-footer"><span class="chal-pts">500 pts</span><span class="chal-solves">7 solves</span></div>
+    </div>
+
+    <div class="chal-card solved">
+      <div class="cat-badge cat-rev">REVERSE</div>
+      <div class="difficulty"><div class="dot on"></div><div class="dot on"></div><div class="dot off"></div></div>
+      <div class="chal-name">Go Go Gadget</div>
+      <div class="chal-desc">A stripped Go binary stands between you and the flag.</div>
+      <div class="chal-footer"><span class="chal-pts">400 pts</span><span class="chal-solves">18 solves</span></div>
+    </div>
+
+    <div class="chal-card">
+      <div class="cat-badge cat-docker">DOCKER</div>
+      <div class="difficulty"><div class="dot on"></div><div class="dot on"></div><div class="dot off"></div></div>
+      <div class="chal-name">Layer Cake</div>
+      <div class="chal-desc">The flag is in the image. But which layer?</div>
+      <div class="chal-footer"><span class="chal-pts">300 pts</span><span class="chal-solves">25 solves</span></div>
+    </div>
+
+    <div class="chal-card">
+      <div class="cat-badge cat-misc">MISC</div>
+      <div class="difficulty"><div class="dot on"></div><div class="dot off"></div><div class="dot off"></div></div>
+      <div class="chal-name">Bit Flip</div>
+      <div class="chal-desc">Sometimes one bit is all it takes. Find it.</div>
+      <div class="chal-footer"><span class="chal-pts">200 pts</span><span class="chal-solves">62 solves</span></div>
+    </div>
+
+    <div class="chal-card solved">
+      <div class="cat-badge cat-crypto">CRYPTO</div>
+      <div class="difficulty"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div></div>
+      <div class="chal-name">RSA Roulette</div>
+      <div class="chal-desc">Small e, big problems. Factor your way out.</div>
+      <div class="chal-footer"><span class="chal-pts">495 pts</span><span class="chal-solves">9 solves</span></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+</div>
+
+<script>
+function show(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+}
+document.querySelectorAll('.filter-pill').forEach(p=>p.addEventListener('click',function(){
+  document.querySelectorAll('.filter-pill').forEach(x=>x.classList.remove('on'));
+  this.classList.add('on');
+}));
+</script>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kubebit Auditor</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f8fc;
+      --card: #ffffff;
+      --text: #1a202c;
+      --muted: #94a3b8;
+      --muted-strong: #64748b;
+      --border: #e8ecf4;
+      --border-dark: #e2e8f0;
+      --blue: #3b5bdb;
+      --blue-soft: #eef2ff;
+      --green: #10b981;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: var(--sans);
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 236px 1fr;
+    }
+
+    .sidebar {
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 22px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 2px 8px;
+    }
+
+    .brand svg { width: 28px; height: 28px; }
+    .brand-name { font-size: 20px; font-weight: 600; letter-spacing: 0; }
+    .brand-name span { color: var(--blue); }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav button {
+      height: 38px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted-strong);
+      font: 500 13px var(--sans);
+      text-align: left;
+      padding: 0 11px;
+      cursor: pointer;
+    }
+
+    .nav button.active {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: #dfe5ff;
+    }
+
+    .side-note {
+      margin-top: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--muted-strong);
+      font-size: 12px;
+      line-height: 1.45;
+      background: #fafbfd;
+    }
+
+    .content {
+      padding: 24px;
+      overflow: auto;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 0;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .user-chip, .badge {
+      border-radius: 999px;
+      padding: 6px 10px;
+      white-space: nowrap;
+      font: 500 12px var(--sans);
+    }
+
+    .user-chip {
+      border: 1px solid var(--border);
+      color: var(--muted-strong);
+      background: #fff;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: #ecfdf5;
+      color: #047857;
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+
+    .badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    button.secondary {
+      height: 38px;
+      border: 1px solid var(--border-dark);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted-strong);
+      font: 500 13px var(--sans);
+      padding: 0 14px;
+      cursor: pointer;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(320px, 1fr));
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      min-width: 520px;
+    }
+
+    th, td {
+      padding: 10px 11px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 12px;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      background: #fafbfd;
+      font: 600 10px var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font: 500 10px var(--mono);
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+      .side-note { margin-top: 0; }
+      .grid { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .top-actions { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <svg viewBox="0 0 28 28" aria-hidden="true">
+          <polygon points="14,2 25,8 25,20 14,26 3,20 3,8" fill="none" stroke="#3b5bdb" stroke-width="1.5"/>
+          <polygon points="14,7 21,11 21,17 14,21 7,17 7,11" fill="#3b5bdb"/>
+        </svg>
+        <div class="brand-name">kube<span>bit</span></div>
+      </div>
+      <nav class="nav">
+        <button class="active" data-page="overview">Overview</button>
+        <button data-page="users">Users</button>
+        <button data-page="challenges">Challenges</button>
+      </nav>
+      <div class="side-note">Read-only audit console for monitoring platform state.</div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar">
+        <div>
+          <h1>Auditor console</h1>
+          <p class="subtitle">Review users, teams, categories, and challenge metadata.</p>
+        </div>
+        <div class="top-actions">
+          <div class="user-chip" id="userChip">Signed in</div>
+          <button class="secondary" id="signOutButton" type="button">Sign out</button>
+          <div class="badge">READ ONLY</div>
+        </div>
+      </div>
+
+      <section class="page active" id="overview">
+        <div class="grid">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Teams</div>
+              <button class="secondary" data-refresh="teams">Refresh</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>ID</th><th>Name</th><th>Captain</th><th>Members</th><th>Points</th></tr></thead>
+                <tbody id="teamsTable"><tr><td colspan="5" class="empty">Loading teams...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Categories</div>
+              <button class="secondary" data-refresh="categories">Refresh</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>ID</th><th>Name</th></tr></thead>
+                <tbody id="categoriesTable"><tr><td colspan="2" class="empty">Loading categories...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="users">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Users</div>
+            <button class="secondary" data-refresh="users">Refresh</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Username</th><th>Name</th><th>Role</th><th>Team</th><th>Points</th></tr></thead>
+              <tbody id="usersTable"><tr><td colspan="6" class="empty">Loading users...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="challenges">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Challenges</div>
+            <button class="secondary" data-refresh="challenges">Refresh</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Category</th><th>Points</th><th>Attempts</th></tr></thead>
+              <tbody id="challengesTable"><tr><td colspan="6" class="empty">Loading challenges...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    async function request(path, options = {}) {
+      const response = await fetch(path, options);
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload.error || `Request failed with ${response.status}`);
+      }
+      return payload;
+    }
+
+    function rows(items, emptyText, render) {
+      if (!items || items.length === 0) return `<tr><td class="empty" colspan="8">${emptyText}</td></tr>`;
+      return items.map(render).join('');
+    }
+
+    async function loadSession() {
+      try {
+        const session = await request('/auth/me');
+        document.querySelector('#userChip').textContent = `${session.user.username} / ${session.user.role}`;
+      } catch {
+        window.location.href = '/login';
+      }
+    }
+
+    async function signOut() {
+      await fetch('/auth/logout', { method: 'POST' });
+      localStorage.removeItem('kubebitCurrentUser');
+      window.location.href = '/login';
+    }
+
+    async function loadUsers() {
+      const users = await request('/users');
+      document.querySelector('#usersTable').innerHTML = rows(users, 'No users yet.', user => `
+        <tr>
+          <td>${user.id}</td>
+          <td><strong>${user.username}</strong></td>
+          <td>${user.name}</td>
+          <td><span class="pill">${user.role}</span></td>
+          <td>${user.team_name || '-'}</td>
+          <td>${user.points}</td>
+        </tr>
+      `);
+    }
+
+    async function loadTeams() {
+      const teams = await request('/teams');
+      document.querySelector('#teamsTable').innerHTML = rows(teams, 'No teams yet.', team => `
+        <tr>
+          <td>${team.id}</td>
+          <td><strong>${team.name}</strong></td>
+          <td>${team.captain_username || '-'}</td>
+          <td>${team.member_count}</td>
+          <td>${team.points}</td>
+        </tr>
+      `);
+    }
+
+    async function loadCategories() {
+      const categories = await request('/categories');
+      document.querySelector('#categoriesTable').innerHTML = rows(categories, 'No categories yet.', category => `
+        <tr><td>${category.id}</td><td><strong>${category.name}</strong></td></tr>
+      `);
+    }
+
+    async function loadChallenges() {
+      const challenges = await request('/challenges');
+      document.querySelector('#challengesTable').innerHTML = rows(challenges, 'No challenges yet.', challenge => `
+        <tr>
+          <td>${challenge.id}</td>
+          <td><strong>${challenge.name}</strong></td>
+          <td><span class="pill">${challenge.type}</span></td>
+          <td>${challenge.category_name || challenge.category_id}</td>
+          <td>${challenge.base_points}</td>
+          <td>${challenge.max_attempts || 'unlimited'}</td>
+        </tr>
+      `);
+    }
+
+    document.querySelectorAll('.nav button').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.nav button').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        button.classList.add('active');
+        document.querySelector(`#${button.dataset.page}`).classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('[data-refresh]').forEach(button => {
+      button.addEventListener('click', () => {
+        const target = button.dataset.refresh;
+        if (target === 'users') loadUsers();
+        if (target === 'teams') loadTeams();
+        if (target === 'categories') loadCategories();
+        if (target === 'challenges') loadChallenges();
+      });
+    });
+
+    document.querySelector('#signOutButton').addEventListener('click', signOut);
+    loadSession();
+    Promise.allSettled([loadUsers(), loadTeams(), loadCategories(), loadChallenges()]);
+  </script>
+</body>
+</html>

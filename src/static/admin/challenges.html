@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kubebit Admin - Challenges</title>
+  <link rel="stylesheet" href="/static/admin/styles.css" />
+</head>
+<body>
+  <div class="setup-overlay" id="setupOverlay">
+    <div class="setup-window">
+      <div class="setup-brand">
+        <svg viewBox="0 0 28 28" aria-hidden="true">
+          <polygon points="14,2 25,8 25,20 14,26 3,20 3,8" fill="none" stroke="#3b5bdb" stroke-width="1.5"/>
+          <polygon points="14,7 21,11 21,17 14,21 7,17 7,11" fill="#3b5bdb"/>
+        </svg>
+        <div class="brand-name">kube<span>bit</span></div>
+      </div>
+      <h2 class="setup-title">Initialize admin access</h2>
+      <p class="setup-copy">Create a new password for the seeded admin account before entering the console.</p>
+      <form class="form" data-action="initialize-admin">
+        <div>
+          <label>New admin password</label>
+          <input name="password" type="password" placeholder="Create a new password" required />
+        </div>
+        <div>
+          <label>Confirm password</label>
+          <input name="password_confirm" type="password" placeholder="Repeat password" required />
+        </div>
+        <div class="actions"><button class="primary" type="submit">Set password</button></div>
+        <div class="status" data-status></div>
+      </form>
+    </div>
+  </div>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <svg viewBox="0 0 28 28" aria-hidden="true">
+          <polygon points="14,2 25,8 25,20 14,26 3,20 3,8" fill="none" stroke="#3b5bdb" stroke-width="1.5"/>
+          <polygon points="14,7 21,11 21,17 14,21 7,17 7,11" fill="#3b5bdb"/>
+        </svg>
+        <div class="brand-name">kube<span>bit</span></div>
+      </div>
+      <nav class="nav" aria-label="Admin sections">
+        <button class="" onclick="window.location.href='/admin/users'">Users</button>
+        <button class="" onclick="window.location.href='/admin/teams'">Teams</button>
+        <button class="active" onclick="window.location.href='/admin/challenges'">Challenges</button>
+      </nav>
+      <div class="side-note">Admin console for local CTF operations. Actions use the current Flask API.</div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar">
+        <div>
+          <h1>Admin console</h1>
+          <p class="subtitle">Create categories and container challenges for the board.</p>
+        </div>
+        <div class="top-actions">
+          <div class="user-chip" id="userChip">Signed in</div>
+          <button class="secondary" id="signOutButton" type="button">Sign out</button>
+          <div class="badge">API ONLINE</div>
+        </div>
+      </div>
+
+      <section class="page active" id="challenges">
+        <div class="grid">
+          <div class="stack">
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-kicker">Categories</div>
+                  <div class="panel-title">Create category</div>
+                </div>
+              </div>
+              <form class="form" data-action="create-category">
+                <div>
+                  <label>Category name</label>
+                  <input name="name" placeholder="web" required />
+                </div>
+                <div class="actions"><button class="primary" type="submit">Create category</button></div>
+                <div class="status" data-status></div>
+              </form>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-kicker">Challenges</div>
+                  <div class="panel-title">Create challenge</div>
+                </div>
+              </div>
+              <div class="tabs">
+                <button class="active" data-challenge-tab="container">Container</button>
+                <button data-challenge-tab="static">Static</button>
+                <button data-challenge-tab="container_static">Container + file</button>
+              </div>
+
+              <form class="form challenge-form active" id="containerForm" data-action="create-container-challenge">
+                <div class="two">
+                  <div><label>Name</label><input name="name" placeholder="SQL" required /></div>
+                  <div><label>Category ID</label><input name="category_id" type="number" required /></div>
+                </div>
+                <div class="two">
+                  <div><label>Base points</label><input name="base_points" type="number" value="100" required /></div>
+                  <div><label>Min points</label><input name="min_points" type="number" value="0" /></div>
+                </div>
+                <div><label>Description</label><textarea name="description" placeholder="Challenge prompt"></textarea></div>
+                <div><label>Flag</label><input class="mono" name="flag" placeholder="flag{...}" required /></div>
+                <div class="two">
+                  <div><label>Docker image</label><input class="mono" name="docker_image" placeholder="angelu/challenge_1:v1" required /></div>
+                  <div><label>Container port</label><input name="container_port" type="number" value="5000" required /></div>
+                </div>
+                <div class="two">
+                  <div><label>CPU limit</label><input class="mono" name="cpu_limit" placeholder="500m" /></div>
+                  <div><label>Memory limit</label><input class="mono" name="memory_limit" placeholder="256Mi" /></div>
+                </div>
+                <div><label>Max attempts</label><input name="max_attempts" type="number" placeholder="optional" /></div>
+                <div class="actions"><button class="primary" type="submit">Create container challenge</button></div>
+                <div class="status" data-status></div>
+              </form>
+
+              <form class="form challenge-form" id="staticForm" data-action="unsupported">
+                <div class="notice">Static challenge creation exists in core logic, but no HTTP endpoint is exposed yet.</div>
+                <div class="two">
+                  <div><label>Name</label><input name="name" placeholder="Forensics 100" /></div>
+                  <div><label>Category ID</label><input name="category_id" type="number" /></div>
+                </div>
+                <div><label>Flag</label><input class="mono" name="flag" placeholder="flag{...}" /></div>
+                <div><label>File path or URL</label><input name="external_url" placeholder="https://..." /></div>
+                <div class="actions"><button class="secondary" type="submit">Endpoint needed</button></div>
+                <div class="status warn" data-status></div>
+              </form>
+
+              <form class="form challenge-form" id="containerStaticForm" data-action="unsupported">
+                <div class="notice">Container + file challenge creation exists in core logic, but no HTTP endpoint is exposed yet.</div>
+                <div class="two">
+                  <div><label>Name</label><input name="name" /></div>
+                  <div><label>Category ID</label><input name="category_id" type="number" /></div>
+                </div>
+                <div><label>Docker image</label><input class="mono" name="docker_image" /></div>
+                <div><label>File path or URL</label><input name="external_url" /></div>
+                <div class="actions"><button class="secondary" type="submit">Endpoint needed</button></div>
+                <div class="status warn" data-status></div>
+              </form>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-kicker">Update</div>
+                  <div class="panel-title">Update challenge</div>
+                </div>
+              </div>
+              <form class="form" data-action="unsupported">
+                <div class="notice">Challenge update UI is staged here. The Flask API does not expose update endpoints yet.</div>
+                <div><label>Challenge ID</label><input name="challenge_id" type="number" /></div>
+                <div><label>Name</label><input name="name" /></div>
+                <div><label>Description</label><textarea name="description"></textarea></div>
+                <div class="actions"><button class="secondary" type="submit">Endpoint needed</button></div>
+                <div class="status warn" data-status></div>
+              </form>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-kicker">Categories</div>
+                  <div class="panel-title">All categories</div>
+                </div>
+                <button class="secondary" data-refresh="categories">Refresh</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>ID</th><th>Name</th></tr></thead>
+                  <tbody id="categoriesTable"><tr><td colspan="2" class="empty">Loading categories...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-kicker">Board</div>
+                  <div class="panel-title">All challenges</div>
+                </div>
+                <button class="secondary" data-refresh="challenges">Refresh</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Points</th><th>Category</th></tr></thead>
+                  <tbody id="challengesTable"><tr><td colspan="5" class="empty">Loading challenges...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="/static/admin/app.js"></script>
+</body>
+</html>

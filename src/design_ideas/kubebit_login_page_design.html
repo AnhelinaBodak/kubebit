@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kubebit CTF — Login</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f7f8fc;
+      --card: #ffffff;
+      --text: #1a202c;
+      --muted: #94a3b8;
+      --muted-strong: #64748b;
+      --border: #e8ecf4;
+      --border-dark: #e2e8f0;
+      --blue: #3b5bdb;
+      --blue-dark: #3451c7;
+      --blue-soft: #eef2ff;
+      --green: #10b981;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(59, 91, 219, 0.12), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.08), transparent 28%),
+        var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+    }
+
+    .shell {
+      width: min(1060px, 100%);
+      min-height: 620px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
+    }
+
+    .left {
+      background: #f7f8fc;
+      border-right: 1px solid var(--border);
+      padding: 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .left::after {
+      content: '';
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: rgba(59, 91, 219, 0.08);
+      right: -140px;
+      top: -120px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand svg {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 auto;
+    }
+
+    .brand-name {
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      color: var(--text);
+    }
+
+    .brand-name span {
+      color: var(--blue);
+    }
+
+    .intro {
+      max-width: 420px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-family: var(--mono);
+      font-size: 11px;
+      margin-bottom: 18px;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    h1 {
+      font-size: clamp(34px, 4.4vw, 56px);
+      line-height: 1.02;
+      letter-spacing: -0.06em;
+      margin-bottom: 18px;
+    }
+
+    h1 span {
+      color: var(--blue);
+    }
+
+    .intro p {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--muted-strong);
+    }
+
+    .preview {
+      margin-top: 34px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .preview-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .preview-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .preview-pill {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--green);
+      background: #ecfdf5;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+
+    .challenge-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .challenge-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px;
+      background: #fff;
+    }
+
+    .category {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #3730a3;
+      background: var(--blue-soft);
+      padding: 3px 7px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    .challenge-name {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .challenge-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .right {
+      padding: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+
+    .login-card {
+      width: min(382px, 100%);
+    }
+
+    .login-card header {
+      margin-bottom: 26px;
+    }
+
+    .login-title {
+      font-size: 25px;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      margin-bottom: 7px;
+    }
+
+    .login-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted-strong);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    input {
+      width: 100%;
+      height: 42px;
+      border: 1px solid var(--border-dark);
+      border-radius: 8px;
+      padding: 0 12px;
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--text);
+      background: #fafbfd;
+      outline: none;
+      transition: border 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input:focus {
+      border-color: var(--blue);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(59, 91, 219, 0.1);
+    }
+
+    input::placeholder {
+      color: #cbd5e1;
+    }
+
+    .actions-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin: 2px 0 18px;
+    }
+
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--muted-strong);
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .remember input {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--blue);
+    }
+
+    .forgot {
+      font-size: 12px;
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .btn-primary {
+      width: 100%;
+      height: 42px;
+      border: none;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+
+    .btn-primary:hover {
+      background: var(--blue-dark);
+      transform: translateY(-1px);
+    }
+
+    .message {
+      display: none;
+      margin-top: 14px;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .message.error {
+      display: block;
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fee2e2;
+    }
+
+    .message.success {
+      display: block;
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #dcfce7;
+    }
+
+    .register {
+      margin-top: 22px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .register a {
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .system-status {
+      margin-top: 26px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted-strong);
+      font-family: var(--mono);
+      font-size: 11px;
+      background: #fafbfd;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+    }
+
+    @media (max-width: 860px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .left {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        min-height: 460px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 14px;
+      }
+
+      .left,
+      .right {
+        padding: 24px;
+      }
+
+      .challenge-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .actions-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="left" aria-label="kubebit CTF preview">
+      <div class="brand">
+        <svg viewBox="0 0 28 28" aria-hidden="true">
+          <polygon points="14,2 25,8 25,20 14,26 3,20 3,8" fill="none" stroke="#3b5bdb" stroke-width="1.5" />
+          <polygon points="14,7 21,11 21,17 14,21 7,17 7,11" fill="#3b5bdb" />
+        </svg>
+        <div class="brand-name">kube<span>bit</span></div>
+      </div>
+
+      <div class="intro">
+        <div class="badge"><span class="badge-dot"></span> CTF platform</div>
+        <h1>Enter the arena. Capture the <span>flag</span>.</h1>
+        <p>
+          Log in to access challenges, submit flags, track your progress, and compete with your team in a Kubernetes-powered CTF environment.
+        </p>
+
+        <div class="preview">
+          <div class="preview-head">
+            <div class="preview-title">Live challenges</div>
+            <div class="preview-pill">ONLINE</div>
+          </div>
+          <div class="challenge-grid">
+            <div class="challenge-card">
+              <div class="category">WEB</div>
+              <div class="challenge-name">Cookie Monster</div>
+              <div class="challenge-meta"><span>487 pts</span><span>31 solves</span></div>
+            </div>
+            <div class="challenge-card">
+              <div class="category">PWN</div>
+              <div class="challenge-name">Stack Smash</div>
+              <div class="challenge-meta"><span>500 pts</span><span>7 solves</span></div>
+            </div>
+            <div class="challenge-card">
+              <div class="category">CRYPTO</div>
+              <div class="challenge-name">XOR Xmas</div>
+              <div class="challenge-meta"><span>100 pts</span><span>89 solves</span></div>
+            </div>
+            <div class="challenge-card">
+              <div class="category">REV</div>
+              <div class="challenge-name">Go Gadget</div>
+              <div class="challenge-meta"><span>400 pts</span><span>18 solves</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note">kubebit · isolated challenges · team scoring · flag validation</div>
+    </section>
+
+    <section class="right" aria-label="Login form">
+      <form class="login-card" id="loginForm">
+        <header>
+          <h2 class="login-title">Welcome back</h2>
+          <p class="login-subtitle">Sign in with your username and password to continue.</p>
+        </header>
+
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text" placeholder="player01" autocomplete="username" />
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" placeholder="••••••••••" autocomplete="current-password" />
+        </div>
+
+        <div class="actions-row">
+          <label class="remember">
+            <input type="checkbox" name="remember" />
+            Remember me
+          </label>
+          <a href="#" class="forgot">Forgot password?</a>
+        </div>
+
+        <button class="btn-primary" type="submit">Sign in</button>
+
+        <div class="message" id="formMessage"></div>
+
+        <div class="system-status">
+          <span class="status-dot"></span>
+          auth service operational
+        </div>
+
+        <p class="register">No account yet? <a href="#">Register for the CTF</a></p>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const message = document.getElementById('formMessage');
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      message.className = 'message';
+      message.textContent = '';
+
+      if (!username || !password) {
+        message.classList.add('error');
+        message.textContent = 'Please enter both username and password.';
+        return;
+      }
+
+      message.classList.add('success');
+      message.textContent = 'Login data submitted. Connect this form to your backend authentication endpoint.';
+    });
+  </script>
+</body>
+</html>
