@@ -377,24 +377,6 @@ def get_all_challenges():
 
     return jsonify(result)
 
-# @app.route("/submissions", methods=["POST"])
-# def submit_flag_route():
-#     data = get_request_data()
-
-#     try:
-#         result = submit_flag(
-#             user_id=data["user_id"],
-#             challenge_id=data["challenge_id"],
-#             submitted_flag=data["flag"]
-#         )
-#         return jsonify(result)
-#     except KeyError as e:
-#         return jsonify({"error": f"Missing required field: {e.args[0]}"}), 400
-#     except ValueError as e:
-#         return jsonify({"error": str(e)}), 400
-#     except SQLAlchemyError:
-#         current_app.logger.exception("Failed to submit flag")
-#         return jsonify({"error": "Internal server error"}), 500
 
 @app.route("/challenges/<int:challenge_id>/submit", methods=["POST"])
 def submit_challenge_flag(challenge_id):
