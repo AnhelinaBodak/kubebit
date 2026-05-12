@@ -11,7 +11,7 @@ metadata:
   name: k8s-manager
 rules:
   - apiGroups: [""]
-    resources: ["namespaces", "pods", "services"]
+    resources: ["namespaces", "pods", "services", "serviceaccounts"]
     verbs: ["get", "list", "create", "delete"]
 
 ---
@@ -27,4 +27,3 @@ subjects:
   - kind: ServiceAccount
     name: k8s-manager
     namespace: management-app
-
