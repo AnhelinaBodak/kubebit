@@ -6,6 +6,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from start_stop_challenge import deploy_challenge, stop_challenge, set_k8s_client
 from core.challenge import create_category, list_categories, create_container_challenge, list_challenges
+from core.competition import get_competition_settings, start_competition, update_scoring_config
 from core.team import create_team, assign_captain, list_teams, list_users_in_team
 from core.user import create_user, assign_user_to_team, list_users_with_teams, ensure_initial_admin, initialize_admin_password, admin_password_initialization_required, authenticate_user
 from core.submission import submit_flag, list_user_solves, list_team_solves
@@ -35,6 +36,7 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
     ensure_initial_admin()
+    get_competition_settings()
 
 @app.route("/health", methods=["GET"])
 def health():
@@ -245,6 +247,30 @@ def initialize_admin_password_status():
     return jsonify({
         "required": admin_password_initialization_required()
     })
+
+@app.route("/admin/competition", methods=["GET"])
+def get_admin_competition():
+    return jsonify(get_competition_settings())
+
+@app.route("/admin/competition/scoring", methods=["POST"])
+def update_admin_competition_scoring():
+    data = get_request_data()
+
+    try:
+        return jsonify(update_scoring_config(data))
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except SQLAlchemyError:
+        current_app.logger.exception("Failed to update competition scoring")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route("/admin/competition/start", methods=["POST"])
+def start_admin_competition():
+    try:
+        return jsonify(start_competition())
+    except SQLAlchemyError:
+        current_app.logger.exception("Failed to start competition")
+        return jsonify({"error": "Internal server error"}), 500
 
 @app.route("/namespaces", methods=["GET"])
 def list_namespaces():
