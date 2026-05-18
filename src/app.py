@@ -423,6 +423,12 @@ def get_all_challenges():
 
     result = []
     for c in challenges:
+        external_url = None
+        if c.file_challenge:
+            external_url = c.file_challenge.external_url
+        elif c.container_file_challenge:
+            external_url = c.container_file_challenge.external_url
+
         result.append({
             "id": c.id,
             "name": c.name,
@@ -432,7 +438,7 @@ def get_all_challenges():
             "min_points": c.min_points,
             "max_attempts": c.max_attempts,
             "category_name": c.category.name if c.category else None,
-            "category_id": c.category_id
+            "external_url": external_url
         })
 
     return jsonify(result)
