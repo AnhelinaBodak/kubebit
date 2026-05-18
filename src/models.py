@@ -14,11 +14,22 @@ class UserRole(enum.Enum):
     ADMIN = "admin"
     AUDITOR = "auditor"
 
+class ScoringMode(enum.Enum):
+    NO_DECAY = "no_decay"
+    FIXED_DECAY = "fixed_decay"
+
 class Competition(db.Model):
     __tablename__ = "competitions"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(120), nullable=False)
+    scoring_mode = Column(
+        Enum(ScoringMode, name="scoring_mode_enum"),
+        nullable=False,
+        default=ScoringMode.NO_DECAY
+    )
+    fixed_decay_rate = Column(Integer, default=0, nullable=False)
+    started_at = Column(DateTime(timezone=True), nullable=True)
 
     min_team_size = Column(Integer, default=1)
     max_team_size = Column(Integer, default=5)
