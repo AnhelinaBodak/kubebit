@@ -4,6 +4,8 @@ from db import db
 from models import Challenge, Solve, Submission, Team, User
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
+from core.competition import calculate_points_awarded
+
 
 def _clean_flag(flag: str) -> str:
     return (flag or "").strip()
@@ -101,7 +103,12 @@ def submit_flag(user_id: int, challenge_id: int, submitted_flag: str):
                     "attempts_left": challenge.max_attempts - attempts_after_submission if challenge.max_attempts is not None else None
                 }
 
-            points_awarded = challenge.base_points
+            solves_count = Solve.query.filter_by(challenge_id=challenge.id).count()
+            points_awarded = calculate_points_awarded(
+                challenge.base_points,
+                challenge.min_points,
+                solves_count
+            )
             first_blood = _is_first_blood(challenge.id)
 
             solve = Solve(
