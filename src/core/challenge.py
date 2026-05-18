@@ -129,7 +129,6 @@ def create_static_challenge(
 
             config = FileChallenge(
                 challenge_id=challenge.id,
-                file_path=file_path,
                 external_url=external_url,
             )
 

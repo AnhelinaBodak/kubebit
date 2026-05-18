@@ -5,7 +5,7 @@ from kubernetes import client, config
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from start_stop_challenge import deploy_challenge, stop_challenge, set_k8s_client
-from core.challenge import create_category, list_categories, create_container_challenge, list_challenges
+from core.challenge import create_category, list_categories, create_container_challenge, list_challenges, create_static_challenge
 from core.competition import get_competition_settings, start_competition, update_scoring_config
 from core.team import create_team, assign_captain, list_teams, list_users_in_team
 from core.user import create_user, assign_user_to_team, list_users_with_teams, ensure_initial_admin, initialize_admin_password, admin_password_initialization_required, authenticate_user
@@ -383,6 +383,40 @@ def add_container_challenge():
         current_app.logger.exception("Unexpected error creating container challenge")
         return jsonify({"error": "Internal server error"}), 500
     
+@app.route("/admin/challenges/static", methods=["POST"])
+def add_static_challenge():
+    data = get_request_data()
+
+    try:
+        challenge = create_static_challenge(
+            name=data["name"],
+            base_points=data["base_points"],
+            min_points=data.get("min_points", 0),
+            flag=data["flag"],
+            category_id=data["category_id"],
+            description=data.get("description"),
+            max_attempts=data.get("max_attempts"),
+            external_url=data.get("external_url")
+        )
+
+        return jsonify({
+            "id": challenge.id,
+            "name": challenge.name,
+            "type": challenge.type.value
+        }), 201
+
+    except KeyError as e:
+        return jsonify({"error": f"Missing required field: {e.args[0]}"}), 400
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except SQLAlchemyError:
+        current_app.logger.exception("Failed to create static challenge sql error")
+        return jsonify({"error": "Internal server error"}), 500
+    except Exception:
+        current_app.logger.exception("Unexpected error creating static challenge")
+        return jsonify({"error": "Internal server error"}), 500
+
+
 @app.route("/challenges", methods=["GET"])
 def get_all_challenges():
     challenges = list_challenges()
